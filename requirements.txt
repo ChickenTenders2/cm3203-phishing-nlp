@@ -2,3 +2,8 @@ pandas
 pyarrow
 fastparquet
 kaggle
+torch
+torchvision
+scikit-learn
+numpy
+matplotlib
