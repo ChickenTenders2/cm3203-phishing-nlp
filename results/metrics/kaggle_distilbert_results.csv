@@ -1,0 +1,2 @@
+,dataset,model,accuracy,precision,recall,f1,false_positive_rate,inference_time_total_sec,inference_time_per_email_sec,train_rows,test_rows,vocab_size
+0,Kaggle,DistilBERT,0.9885,0.9923,0.9663,0.9791,0.0029,22.6043,0.02362,1435,957,30522

@@ -1,0 +1,2 @@
+dataset,model,accuracy,precision,recall,f1,false_positive_rate,inference_time_total_sec,inference_time_per_email_sec,train_rows,test_rows,vocab_size
+MeAJOR,DistilBERT,0.9902,0.9913,0.9867,0.989,0.007,306.1433,0.007319,62743,41829,30522
