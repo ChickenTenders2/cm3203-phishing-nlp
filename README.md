@@ -48,11 +48,11 @@ Metrics are reported for accuracy, F1 on the phishing class, false positive rate
 |---|---|---|---|---|
 | TF-IDF + MultinomialNB | 0.863 | 0.675 | 0.000 | < 0.000002s |
 | TF-IDF + LogisticRegression | 0.941 | 0.883 | 0.000 | < 0.000001s |
-| SimHash + kNN | 0.912 | 0.834 | 0.041 | 0.000022s |
+| TF-IDF + LinearSVM | 0.991 | 0.983 | 0.001 | < 0.000001s |
 | TF-IDF + RandomForest | 0.983 | 0.969 | 0.001 | 0.000025s |
+| SimHash + kNN | 0.912 | 0.834 | 0.041 | 0.000022s |
 | TextCNN | 0.983 | 0.970 | 0.006 | 0.00148s |
 | BiLSTM | 0.971 | 0.949 | 0.030 | 0.00092s |
-| TF-IDF + LinearSVM | 0.991 | 0.983 | 0.001 | < 0.000001s |
 | DistilBERT | 0.989 | 0.979 | 0.003 | 0.02362s |
 
 ### MeAJOR dataset (41,829 test emails)
@@ -61,15 +61,18 @@ Metrics are reported for accuracy, F1 on the phishing class, false positive rate
 |---|---|---|---|---|
 | TF-IDF + MultinomialNB | 0.963 | 0.957 | 0.012 | < 0.000001s |
 | TF-IDF + LogisticRegression | 0.977 | 0.974 | 0.019 | < 0.000001s |
+| TF-IDF + LinearSVM | 0.985 | 0.983 | 0.015 | < 0.000001s |
 | TF-IDF + RandomForest | 0.977 | 0.974 | 0.011 | 0.000038s |
+| SimHash + kNN | 0.862 | 0.844 | 0.120 | 0.001341s |
 | TextCNN | 0.983 | 0.981 | 0.019 | 0.00033s |
 | BiLSTM | 0.979 | 0.977 | 0.018 | 0.003135s |
-| TF-IDF + LinearSVM | 0.985 | 0.983 | 0.015 | < 0.000001s |
 | DistilBERT | 0.990 | 0.989 | 0.007 | 0.007319s |
 
 A few things are worth pulling out. On the Kaggle dataset, LinearSVM comes very close to matching DistilBERT on F1 (0.983 vs 0.979) while being roughly four orders of magnitude faster at inference. The per-source breakdown tells a more revealing story: MultinomialNB effectively fails on LLM-generated phishing emails, scoring an F1 of 0.06 on that sub-group compared to 0.80 on human-written ones. LinearSVM and RandomForest both score perfect on LLM-generated test emails, which suggests those models are finding real structural differences in the phishing content rather than just mimicking surface patterns from the training distribution.
 
 On MeAJOR the picture tightens up considerably. LinearSVM at 0.983 F1 is only about six points behind DistilBERT at 0.989, but DistilBERT's false positive rate of 0.007 is roughly half of LinearSVM's 0.015. Across 41,829 test emails that translates to around 290 incorrectly flagged legitimate emails for DistilBERT versus around 625 for LinearSVM — the kind of difference that would matter a great deal to users receiving false spam verdicts on real mail.
+
+SimHash underperforms considerably on MeAJOR compared to its Kaggle results. The best configuration (128-bit, k=9) reaches 0.844 F1 with an FPR of 0.120 — roughly ten times worse than any of the classical TF-IDF models. The gap is likely explained by dataset scale: with 62,743 training emails, the kNN search space is large enough that Hamming distance on 128-bit fingerprints loses enough resolution to cause frequent misclassifications near decision boundaries. The hyperparameter sweep also shows a clear trend where increasing k keeps pushing the FPR down at the cost of recall, which suggests the fingerprints are not discriminative enough on this dataset for a small neighbourhood to be reliable.
 
 ## Repository structure
 
