@@ -40,33 +40,33 @@ The Kaggle deep learning experiments use PyTorch; the MeAJOR deep learning exper
 
 ## Results
 
-Metrics are reported for accuracy, F1 on the phishing class, false positive rate (legitimate emails misclassified as phishing), and inference time per email. The FPR and timing figures are what make the comparison interesting — accuracy alone hides a lot.
+Metrics are reported for accuracy, precision, recall, F1 on the phishing class, false positive rate (legitimate emails misclassified as phishing), and inference time per email. Consolidated result tables are generated in `results/tables/results_summary.ipynb` and exported as CSV files in `results/tables/`.
 
 ### Kaggle dataset (957 test emails)
 
-| Model | Accuracy | F1 | FPR | Time / email |
-|---|---|---|---|---|
-| TF-IDF + MultinomialNB | 0.863 | 0.675 | 0.000 | < 0.000002s |
-| TF-IDF + LogisticRegression | 0.941 | 0.883 | 0.000 | < 0.000001s |
-| TF-IDF + LinearSVM | 0.991 | 0.983 | 0.001 | < 0.000001s |
-| TF-IDF + RandomForest | 0.983 | 0.969 | 0.001 | 0.000025s |
-| SimHash + kNN | 0.912 | 0.834 | 0.041 | 0.000022s |
-| TextCNN | 0.983 | 0.970 | 0.006 | 0.00148s |
-| BiLSTM | 0.971 | 0.949 | 0.030 | 0.00092s |
-| DistilBERT | 0.989 | 0.979 | 0.003 | 0.02362s |
+| Model | Accuracy | Precision | Recall | F1 | FPR | Inference (ms/email) |
+|---|---:|---:|---:|---:|---:|---:|
+| TF-IDF + MultinomialNB | 0.8631 | 1.0000 | 0.5094 | 0.6749 | 0.0000 | 0.0013 |
+| TF-IDF + LogisticRegression | 0.9415 | 1.0000 | 0.7903 | 0.8828 | 0.0000 | 0.0014 |
+| TF-IDF + LinearSVM | 0.9906 | 0.9962 | 0.9700 | 0.9829 | 0.0014 | 0.0004 |
+| TF-IDF + RandomForest | 0.9833 | 0.9960 | 0.9438 | 0.9692 | 0.0014 | 0.0278 |
+| SimHash + kNN (128-bit, k=1) | 0.9122 | 0.8828 | 0.7903 | 0.8340 | 0.0406 | 0.0504 |
+| TextCNN | 0.9833 | 0.9846 | 0.9551 | 0.9696 | 0.0058 | 1.5106 |
+| BiLSTM | 0.9666 | 0.9181 | 0.9663 | 0.9416 | 0.0333 | 1.1693 |
+| DistilBERT | 0.9885 | 0.9923 | 0.9663 | 0.9791 | 0.0029 | 23.6200 |
 
 ### MeAJOR dataset (41,829 test emails)
 
-| Model | Accuracy | F1 | FPR | Time / email |
-|---|---|---|---|---|
-| TF-IDF + MultinomialNB | 0.963 | 0.957 | 0.012 | < 0.000001s |
-| TF-IDF + LogisticRegression | 0.977 | 0.974 | 0.019 | < 0.000001s |
-| TF-IDF + LinearSVM | 0.985 | 0.983 | 0.015 | < 0.000001s |
-| TF-IDF + RandomForest | 0.977 | 0.974 | 0.011 | 0.000038s |
-| SimHash + kNN | 0.862 | 0.844 | 0.120 | 0.001341s |
-| TextCNN | 0.983 | 0.981 | 0.019 | 0.00033s |
-| BiLSTM | 0.979 | 0.977 | 0.018 | 0.003135s |
-| DistilBERT | 0.990 | 0.989 | 0.007 | 0.007319s |
+| Model | Accuracy | Precision | Recall | F1 | FPR | Inference (ms/email) |
+|---|---:|---:|---:|---:|---:|---:|
+| TF-IDF + MultinomialNB | 0.9630 | 0.9846 | 0.9316 | 0.9574 | 0.0117 | 0.0006 |
+| TF-IDF + LogisticRegression | 0.9770 | 0.9759 | 0.9724 | 0.9741 | 0.0193 | 0.0002 |
+| TF-IDF + LinearSVM | 0.9845 | 0.9819 | 0.9834 | 0.9826 | 0.0146 | 0.0002 |
+| TF-IDF + RandomForest | 0.9775 | 0.9857 | 0.9634 | 0.9744 | 0.0112 | 0.0378 |
+| SimHash + kNN (128-bit, k=9) | 0.8615 | 0.8493 | 0.8379 | 0.8436 | 0.1196 | 1.2267 |
+| TextCNN | 0.9831 | 0.9768 | 0.9855 | 0.9811 | 0.0189 | 0.3211 |
+| BiLSTM | 0.9792 | 0.9779 | 0.9753 | 0.9766 | 0.0177 | 3.1347 |
+| DistilBERT | 0.9896 | 0.9923 | 0.9842 | 0.9882 | 0.0062 | 7.6370 |
 
 A few things are worth pulling out. On the Kaggle dataset, LinearSVM comes very close to matching DistilBERT on F1 (0.983 vs 0.979) while being roughly four orders of magnitude faster at inference. The per-source breakdown tells a more revealing story: MultinomialNB effectively fails on LLM-generated phishing emails, scoring an F1 of 0.06 on that sub-group compared to 0.80 on human-written ones. LinearSVM and RandomForest both score perfect on LLM-generated test emails, which suggests those models are finding real structural differences in the phishing content rather than just mimicking surface patterns from the training distribution.
 
@@ -91,16 +91,19 @@ notebooks/
   meajor_deep_learning.ipynb
   meajor_distilbert.ipynb
   meajor_simhash.ipynb
-src/
-  data_prep.py
-  evaluate.py
-  train_classical.py
 results/
   figures/           confusion matrix and training curve images
   metrics/           per-model CSV result files
+  tables/            consolidated summary notebook and exported comparison tables
 models/
   classical/         saved model artifacts
 ```
+
+The `results/` directory is now organised by output type:
+
+- `results/figures/` stores confusion matrices, threshold sweeps, and training curves.
+- `results/metrics/` stores raw per-notebook CSV outputs, including `all_results.csv`.
+- `results/tables/` stores the summary notebook (`results_summary.ipynb`) plus generated comparison tables such as `kaggle_summary_table.csv`, `meajor_summary_table.csv`, and `all_results_normalised.csv`.
 
 ## Setup
 
@@ -109,6 +112,6 @@ pip install -r requirements.txt
 pip install transformers tensorflow seaborn
 ```
 
-The `requirements.txt` covers the core dependencies (pandas, scikit-learn, PyTorch, numpy, matplotlib). The `transformers` package is needed for the DistilBERT notebooks and `tensorflow` is needed for the MeAJOR deep learning notebook. `seaborn` is optional but used in a few visualisation cells.
+The `requirements.txt` covers the core dependencies used across the notebooks, including pandas, Parquet support, PyTorch, scikit-learn, matplotlib, and `transformers`. `tensorflow` is still required separately for the MeAJOR deep learning notebook. `seaborn` is optional and only used in a few visualisation cells.
 
 Notebooks should be run in order within each dataset group: the preparation notebook first, then classical baselines, deep learning, DistilBERT, and SimHash. The preparation notebook must be run before any of the modelling notebooks since it produces the Parquet splits everything else loads from.
