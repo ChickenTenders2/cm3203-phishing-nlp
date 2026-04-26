@@ -1,6 +1,6 @@
 # CM3203 Phishing Email Detection
 
-This project is my CM3203 final-year dissertation project at Cardiff University. The main aim was to compare different NLP approaches for phishing email detection, starting with simple TF-IDF baselines and going up to deeper neural models and DistilBERT.
+This work was to compare different NLP approaches for phishing email detection, starting with simple TF-IDF baselines and going up to deeper neural models and DistilBERT.
 
 The main question behind it was pretty straightforward: are the bigger and more expensive models actually worth using? In some cases, yes, but not always by a huge margin. One of the more interesting outcomes was that a lightweight model like TF-IDF + LinearSVM could get extremely close to the heavier models on raw performance, while DistilBERT still had an advantage when it came to reducing false positives.
 
